@@ -1,0 +1,264 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Problem 6.14</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-03-14"><meta name="DC.source" content="p6_14.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Problem 6.14</h1><pre class="codeinput">clear, clc
+
+u = 398600;
+
+rp1 = 6674;
+ra1 = 6680;
+
+rp2 = 6637;
+ra2 = 6669;
+
+rp3 = 6637;
+ra3 = 6637;
+
+rp4 = 6633;
+ra4 = 6572;
+
+a1 = (rp1 + ra1) / 2;
+a2 = (rp2 + ra2) / 2;
+a3 = (rp3 + ra3) / 2;
+a4 = (rp4 + ra4) / 2;
+
+e1 = (ra1 - rp1) / (ra1 + rp1);
+e2 = (ra2 - rp2) / (ra2 + rp2);
+e3 = (ra3 - rp3) / (ra3 + rp3);
+e4 = (ra4 - rp4) / (ra4 + rp4);
+
+h1 = sqrt(a1 * u * (1 - e1^2));
+h2 = sqrt(a2 * u * (1 - e2^2));
+h3 = sqrt(a3 * u * (1 - e3^2));
+h4 = sqrt(a4 * u * (1 - e4^2));
+</pre><pre class="codeinput">vP1 = h1 / rp1;
+vA2 = h2 / ra2;
+vA1 = h1 / ra1;
+vP2 = h2 / rp2;
+
+vPT1 = sqrt((2 * u * ra2) / (rp1 * (rp1 + ra2)));
+vAT2 = sqrt((2 * u * rp1) / (ra2 * (rp1 + ra2)));
+
+vAT1 = sqrt((2 * u * ra1) / (rp2 * (ra1 + rp2)));
+vPT2 = sqrt((2 * u * rp2) / (ra1 * (ra1 + rp2)));
+
+dV1_1 = vPT1 - vP1 + vA2 - vAT2;
+dV1_2 = vAT1 - vA1 + vP2 - vPT2;
+
+<span class="keyword">if</span> (dV1_2 / dV1_1 &gt; 1)
+   delta_V1 = dV1_1;
+<span class="keyword">else</span>
+    delta_V1 = dV1_2;
+<span class="keyword">end</span>
+</pre><pre class="codeinput">vP2 = h2 / rp2;
+vA3 = h3 / ra3;
+vA2 = h2 / ra2;
+vP3 = h3 / rp3;
+
+vPT2 = sqrt((2 * u * ra3) / (rp2 * (rp2 + ra3)));
+vAT3 = sqrt((2 * u * rp2) / (ra3 * (rp2 + ra3)));
+
+vAT2 = sqrt((2 * u * ra2) / (rp3 * (ra2 + rp3)));
+vPT3 = sqrt((2 * u * rp3) / (ra2 * (ra2 + rp3)));
+
+dV2_1 = vPT2 - vP2 + vA3 - vAT3;
+dV2_2 = vAT2 - vA2 + vP3 - vPT3;
+
+<span class="keyword">if</span> (dV2_2 / dV2_2 &gt; 1)
+   delta_V2 = dV2_1;
+<span class="keyword">else</span>
+    delta_V2 = dV2_2;
+<span class="keyword">end</span>
+</pre><pre class="codeinput">vP3 = h3 / rp3;
+vA4 = h4 / ra4;
+vA3 = h3 / ra3;
+vP4 = h4 / rp4;
+
+vPT3 = sqrt((2 * u * ra4) / (rp3 * (rp3 + ra4)));
+vAT4 = sqrt((2 * u * rp3) / (ra4 * (rp3 + ra4)));
+
+vAT3 = sqrt((2 * u * ra3) / (rp4 * (ra3 + rp4)));
+vPT4 = sqrt((2 * u * rp4) / (ra3 * (ra3 + rp4)));
+
+dV3_1 = vPT3 - vP3 + vA4 - vAT4;
+dV3_2 = vAT3 - vA3 + vP4 - vPT4;
+
+<span class="keyword">if</span> (dV3_2 / dV3_2 &gt; 1)
+   delta_V3 = dV3_1;
+<span class="keyword">else</span>
+    delta_V3 = dV3_2;
+<span class="keyword">end</span>
+
+deltaV = delta_V1 + delta_V2 + delta_V3
+</pre><pre class="codeoutput">
+deltaV =
+
+    0.1402
+
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Problem 6.14
+
+clear, clc
+
+u = 398600;
+
+rp1 = 6674;
+ra1 = 6680;
+
+rp2 = 6637;
+ra2 = 6669;
+
+rp3 = 6637;
+ra3 = 6637;
+
+rp4 = 6633;
+ra4 = 6572;
+
+a1 = (rp1 + ra1) / 2;
+a2 = (rp2 + ra2) / 2;
+a3 = (rp3 + ra3) / 2;
+a4 = (rp4 + ra4) / 2;
+
+e1 = (ra1 - rp1) / (ra1 + rp1);
+e2 = (ra2 - rp2) / (ra2 + rp2);
+e3 = (ra3 - rp3) / (ra3 + rp3);
+e4 = (ra4 - rp4) / (ra4 + rp4);
+
+h1 = sqrt(a1 * u * (1 - e1^2));
+h2 = sqrt(a2 * u * (1 - e2^2));
+h3 = sqrt(a3 * u * (1 - e3^2));
+h4 = sqrt(a4 * u * (1 - e4^2));
+
+
+%%
+vP1 = h1 / rp1;
+vA2 = h2 / ra2;
+vA1 = h1 / ra1;
+vP2 = h2 / rp2;
+
+vPT1 = sqrt((2 * u * ra2) / (rp1 * (rp1 + ra2)));
+vAT2 = sqrt((2 * u * rp1) / (ra2 * (rp1 + ra2)));
+
+vAT1 = sqrt((2 * u * ra1) / (rp2 * (ra1 + rp2)));
+vPT2 = sqrt((2 * u * rp2) / (ra1 * (ra1 + rp2)));
+
+dV1_1 = vPT1 - vP1 + vA2 - vAT2;
+dV1_2 = vAT1 - vA1 + vP2 - vPT2;
+
+if (dV1_2 / dV1_1 > 1)
+   delta_V1 = dV1_1; 
+else
+    delta_V1 = dV1_2;
+end
+
+%%
+vP2 = h2 / rp2;
+vA3 = h3 / ra3;
+vA2 = h2 / ra2;
+vP3 = h3 / rp3;
+
+vPT2 = sqrt((2 * u * ra3) / (rp2 * (rp2 + ra3)));
+vAT3 = sqrt((2 * u * rp2) / (ra3 * (rp2 + ra3)));
+
+vAT2 = sqrt((2 * u * ra2) / (rp3 * (ra2 + rp3)));
+vPT3 = sqrt((2 * u * rp3) / (ra2 * (ra2 + rp3)));
+
+dV2_1 = vPT2 - vP2 + vA3 - vAT3;
+dV2_2 = vAT2 - vA2 + vP3 - vPT3;
+
+if (dV2_2 / dV2_2 > 1)
+   delta_V2 = dV2_1; 
+else
+    delta_V2 = dV2_2;
+end
+
+%%
+vP3 = h3 / rp3;
+vA4 = h4 / ra4;
+vA3 = h3 / ra3;
+vP4 = h4 / rp4;
+
+vPT3 = sqrt((2 * u * ra4) / (rp3 * (rp3 + ra4)));
+vAT4 = sqrt((2 * u * rp3) / (ra4 * (rp3 + ra4)));
+
+vAT3 = sqrt((2 * u * ra3) / (rp4 * (ra3 + rp4)));
+vPT4 = sqrt((2 * u * rp4) / (ra3 * (ra3 + rp4)));
+
+dV3_1 = vPT3 - vP3 + vA4 - vAT4;
+dV3_2 = vAT3 - vA3 + vP4 - vPT4;
+
+if (dV3_2 / dV3_2 > 1)
+   delta_V3 = dV3_1; 
+else
+    delta_V3 = dV3_2;
+end
+
+deltaV = delta_V1 + delta_V2 + delta_V3
+##### SOURCE END #####
+--></body></html>
