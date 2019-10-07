@@ -1,0 +1,631 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>RocketProblem</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-04-21"><meta name="DC.source" content="RocketProblem.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Rocket Problem</a></li><li><a href="#2">Clearing console and variables.</a></li><li><a href="#3">Declaring constant values given from problem statement.</a></li><li><a href="#4">Intermediate calculations of various values.</a></li><li><a href="#5">No atmosphere, no pitchover angle.</a></li><li><a href="#6">No atmosphere, 0.1 rad pitchover angle.</a></li><li><a href="#7">Atmosphere, 0.1 rad pitchover angle.</a></li><li><a href="#8">Atmosphere, 0.1 rad pitchover angle, changing parameters</a></li><li><a href="#9">Rates function called by ODE45.</a></li></ul></div><h2 id="1">Rocket Problem</h2><p>Spaceflight Mechanics - Spring 2019 Johnathan Corbin</p><pre class="codeinput"><span class="keyword">function</span> RocketProblem
+</pre><h2 id="2">Clearing console and variables.</h2><pre class="codeinput">clear, clc
+</pre><h2 id="3">Declaring constant values given from problem statement.</h2><pre class="codeinput">Isp = 353; <span class="comment">%LOx - Kerosene propellant, [s]</span>
+epsilon = 0.01; <span class="comment">%Rocket's structural ratio</span>
+mass_L = 1000; <span class="comment">%Payload mass, [kg]</span>
+mass_P = 10000; <span class="comment">%Propellant mass, [kg]</span>
+diameter = 1.65; <span class="comment">%Rocket diameter, [m]</span>
+t_burn = 240; <span class="comment">%Total burn time, [s]</span>
+r_earth = 6378 * 1000; <span class="comment">%Radius of the Earth, [m]</span>
+t0 = 0; <span class="comment">%Initial time, [s]</span>
+pitch = 500; <span class="comment">%Height at which pitchover begins, [m]</span>
+u = 398600 * 1000^3; <span class="comment">%Standard gravitational parameter for Earth, [m^3/s^2]</span>
+s_g = 9.81; <span class="comment">%Standard gravity, [m/s^2]</span>
+rho0 = 1.225; <span class="comment">%Sea level air density, [kg/m^3]</span>
+hscale = 7500; <span class="comment">%Density scale height, [m]</span>
+</pre><h2 id="4">Intermediate calculations of various values.</h2><pre class="codeinput">A = pi * (diameter / 2)^2; <span class="comment">%Frontal area of the rocket, [m^2]</span>
+tspan = [t0, t_burn]; <span class="comment">%Time range for the integrator, [s]</span>
+mass_structure = -epsilon * mass_P / (epsilon - 1); <span class="comment">%Structural mass of the rocket, [kg]</span>
+m_dot = mass_P / t_burn; <span class="comment">%Mass rate of ejecta, [kg/s]</span>
+thrust = m_dot * Isp * s_g; <span class="comment">%Thrust generated by ejecta, [N]</span>
+</pre><h2 id="5">No atmosphere, no pitchover angle.</h2><pre class="codeinput">theta0 = 0; <span class="comment">%Pitchover angle, [rad]</span>
+Cd = 0; <span class="comment">%Drag coefficient</span>
+v0 = 0; <span class="comment">%Initial velocity, [m/s]</span>
+x0 = 0; <span class="comment">%Initial downrange distance, [m]</span>
+h0 = 0; <span class="comment">%Initial height, [m]</span>
+
+f0 = [v0, theta0, x0, h0]; <span class="comment">% Initial conditions vector</span>
+Opt1 = odeset(<span class="string">'Events'</span>, @Begin_Pitch);
+[time, f] = ode45(@rocketMan, tspan, f0, Opt1);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+figure(1)
+plot(x / 1000, h / 1000, <span class="string">'--k'</span>)
+hold <span class="string">on</span>
+
+v0 = v(end); <span class="comment">%Initial velocity, [m/s]</span>
+x0 = x(end); <span class="comment">%Initial downrange distance, [m]</span>
+h0 = h(end); <span class="comment">%Initial height, [m]</span>
+
+tspan = [time(end), t_burn];
+f0 = [v0, theta0, x0, h0];
+Opt2 = odeset(<span class="string">'Events'</span>, @Crashed);
+[~, f] = ode45(@rocketMan2, tspan, f0, Opt2);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+plot(x / 1000, h / 1000, <span class="string">'--k'</span>)
+grid <span class="string">on</span>
+title(<span class="string">'No Atmosphere, No Pitch'</span>)
+xlabel(<span class="string">'Downrange [km]'</span>)
+ylabel(<span class="string">'Height [km]'</span>)
+</pre><img vspace="5" hspace="5" src="RocketProblem_01.png" alt=""> <h2 id="6">No atmosphere, 0.1 rad pitchover angle.</h2><pre class="codeinput">theta0 = 0.1 * pi / 180; <span class="comment">%Pitchover angle, [rad]</span>
+Cd = 0; <span class="comment">%Drag coefficient</span>
+v0 = 0; <span class="comment">%Initial velocity, [m/s]</span>
+x0 = 0; <span class="comment">%Initial downrange distance, [m]</span>
+h0 = 0; <span class="comment">%Initial height, [m]</span>
+tspan = [t0, t_burn];
+
+f0 = [v0, 0, x0, h0]; <span class="comment">% Initial conditions vector</span>
+Opt1 = odeset(<span class="string">'Events'</span>, @Begin_Pitch);
+[time, f] = ode45(@rocketMan, tspan, f0, Opt1);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+figure(2)
+plot(x / 1000, h / 1000, <span class="string">'--k'</span>)
+hold <span class="string">on</span>
+
+v0 = v(end); <span class="comment">%Initial velocity, [m/s]</span>
+x0 = x(end); <span class="comment">%Initial downrange distance, [m]</span>
+h0 = h(end); <span class="comment">%Initial height, [m]</span>
+
+tspan = [time(end), t_burn];
+f0 = [v0, theta0, x0, h0];
+Opt2 = odeset(<span class="string">'Events'</span>, @Crashed);
+[~, f] = ode45(@rocketMan2, tspan, f0, Opt2);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+p(1) = plot(x / 1000, h / 1000, <span class="string">'--k'</span>);
+grid <span class="string">on</span>
+title(<span class="string">'0.1 Rad Pitch'</span>)
+xlabel(<span class="string">'Downrange [km]'</span>)
+ylabel(<span class="string">'Height [km]'</span>)
+</pre><img vspace="5" hspace="5" src="RocketProblem_02.png" alt=""> <h2 id="7">Atmosphere, 0.1 rad pitchover angle.</h2><pre class="codeinput">theta0 = 0.1 * pi / 180; <span class="comment">%Pitchover angle, [rad]</span>
+Cd = 0.3; <span class="comment">%Drag coefficient</span>
+v0 = 0; <span class="comment">%Initial velocity, [m/s]</span>
+x0 = 0; <span class="comment">%Initial downrange distance, [m]</span>
+h0 = 0; <span class="comment">%Initial height, [m]</span>
+tspan = [t0, t_burn];
+
+f0 = [v0, 0, x0, h0]; <span class="comment">% Initial conditions vector</span>
+Opt1 = odeset(<span class="string">'Events'</span>, @Begin_Pitch);
+[time, f] = ode45(@rocketMan, tspan, f0, Opt1);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+plot(x / 1000, h / 1000, <span class="string">'b'</span>)
+hold <span class="string">on</span>
+
+v0 = v(end); <span class="comment">%Initial velocity, [m/s]</span>
+x0 = x(end); <span class="comment">%Initial downrange distance, [m]</span>
+h0 = h(end); <span class="comment">%Initial height, [m]</span>
+
+tspan = [time(end), t_burn];
+f0 = [v0, theta0, x0, h0];
+Opt2 = odeset(<span class="string">'Events'</span>, @Crashed);
+[~, f] = ode45(@rocketMan2, tspan, f0, Opt2);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+p(2) = plot(x / 1000, h / 1000, <span class="string">'b'</span>);
+legend(p([1 2]), <span class="string">'No Drag'</span>,<span class="string">'With Drag'</span>, <span class="string">'location'</span>, <span class="string">'best'</span>)
+</pre><img vspace="5" hspace="5" src="RocketProblem_03.png" alt=""> <h2 id="8">Atmosphere, 0.1 rad pitchover angle, changing parameters</h2><pre class="codeinput">theta0 = 1.1 * pi /180; <span class="comment">%Pitchover angle, [rad]</span>
+Cd = 0.3; <span class="comment">%Drag coefficient</span>
+v0 = 0; <span class="comment">%Initial velocity, [m/s]</span>
+x0 = 0; <span class="comment">%Initial downrange distance, [m]</span>
+h0 = 0; <span class="comment">%Initial height, [m]</span>
+tspan = [t0, t_burn];
+
+mass_P = 15350;
+m_dot = mass_P / t_burn; <span class="comment">%Mass rate of ejecta, [kg/s]</span>
+thrust = m_dot * Isp * s_g; <span class="comment">%Thrust generated by ejecta, [N]</span>
+
+f0 = [v0, 0, x0, h0]; <span class="comment">% Initial conditions vector</span>
+Opt1 = odeset(<span class="string">'Events'</span>, @Begin_Pitch);
+[time, f] = ode45(@rocketMan, tspan, f0, Opt1);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+figure(3)
+subplot(2, 2, [1 2])
+plot(x / 1000, h / 1000, <span class="string">'--k'</span>)
+hold <span class="string">on</span>
+
+subplot(2, 2, [3 4])
+plot(h / 1000, v / 1000, <span class="string">'--k'</span>)
+hold <span class="string">on</span>
+
+v0 = v(end); <span class="comment">%Initial velocity, [m/s]</span>
+x0 = x(end); <span class="comment">%Initial downrange distance, [m]</span>
+h0 = h(end); <span class="comment">%Initial height, [m]</span>
+
+tspan = [time(end), t_burn];
+f0 = [v0, theta0, x0, h0];
+Opt2 = odeset(<span class="string">'Events'</span>, @Crashed);
+[~, f] = ode45(@rocketMan2, tspan, f0, Opt2);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+subplot(2, 2, [1 2])
+plot(x / 1000, h / 1000, <span class="string">'--k'</span>)
+grid <span class="string">on</span>
+title(<span class="string">'Adjusting Parameters'</span>)
+xlabel(<span class="string">'Downrange [km]'</span>)
+ylabel(<span class="string">'Height [km]'</span>)
+
+subplot(2, 2, [3 4])
+plot(h / 1000, v / 1000, <span class="string">'--r'</span>)
+grid <span class="string">on</span>
+xlabel(<span class="string">'Height [km]'</span>)
+ylabel(<span class="string">'Velocity [km/s]'</span>)
+
+fprintf(<span class="string">'\n Final burn height =                                       %g'</span>, h(end) / 1000)
+fprintf(<span class="string">'\n Final burn velocity =                                     %g'</span>, v(end) / 1000)
+fprintf(<span class="string">'\n Final burn angle =                                        %g'</span>, theta(end) * 180 / pi)
+fprintf(<span class="string">'\n'</span>)
+</pre><pre class="codeoutput">
+ Final burn height =                                       155.185
+ Final burn velocity =                                     7.8145
+ Final burn angle =                                        77.6481
+</pre><img vspace="5" hspace="5" src="RocketProblem_04.png" alt=""> <h2 id="9">Rates function called by ODE45.</h2><pre class="codeinput"><span class="keyword">function</span> dydt = rocketMan(t, y)
+    dydt = zeros(size(y));
+
+    v = y(1);
+    theta = y(2);
+    x = y(3);
+    h = y(4);
+
+    <span class="keyword">if</span> t &lt; t_burn
+       mass = mass_structure + mass_L + mass_P - m_dot * t;
+       T = thrust;
+    <span class="keyword">else</span>
+        T = 0;
+        mass = mass_structure + mass_L;
+    <span class="keyword">end</span>
+
+    g = -(mass * u) / (r_earth + h)^2;
+    density = rho0 * exp(-h / hscale);
+    drag = -0.5 * density * Cd * A * v^2;
+
+    theta_dot = 0;
+    v_dot = (T + drag + g) / mass;
+    x_dot = 0;
+    h_dot = v;
+
+    dydt(1) = v_dot;
+    dydt(2) = theta_dot;
+    dydt(3) = x_dot;
+    dydt(4) = h_dot;
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> dydt = rocketMan2(t, y)
+    dydt = zeros(size(y));
+
+    v = y(1);
+    theta = y(2);
+    x = y(3);
+    h = y(4);
+
+    <span class="keyword">if</span> t &lt; t_burn
+       mass = mass_structure + mass_L + mass_P - m_dot * t;
+       T = thrust;
+    <span class="keyword">else</span>
+        T = 0;
+        mass = mass_structure + mass_L;
+    <span class="keyword">end</span>
+
+    g = (mass * u) / (r_earth + h)^2;
+    density = rho0 * exp(-h / hscale);
+    drag = 0.5 * density * Cd * A * v^2;
+
+    v_dot = (T - drag - g * cos(theta)) / mass;
+    theta_dot = (u * sin(theta)) / (v * (r_earth + h)^2);
+    x_dot = v*sin(theta);
+    h_dot = v*cos(theta);
+
+    dydt(1) = v_dot;
+    dydt(2) = theta_dot;
+    dydt(3) = x_dot;
+    dydt(4) = h_dot;
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [value,isterminal,direction] = Begin_Pitch(~,y)
+<span class="comment">%Event funtion to stop integration when rocket reaches 500[m]</span>
+<span class="keyword">if</span> y(4) &lt; pitch
+ value = 1; <span class="comment">%Keep going</span>
+<span class="keyword">else</span> <span class="comment">%If not</span>
+ value = 0; <span class="comment">%Then stop</span>
+<span class="keyword">end</span>
+isterminal = 1; <span class="comment">%Terminate integration when condtion met</span>
+direction = 0; <span class="comment">%Direction doesn't matter</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [value,isterminal,direction] = Crashed(~,y)
+<span class="comment">%Event funtion to stop integration when rocket reaches 500[m]</span>
+<span class="keyword">if</span> y(4) &gt; 0
+ value = 1; <span class="comment">%Keep going</span>
+<span class="keyword">else</span> <span class="comment">%If not</span>
+ value = 0; <span class="comment">%Then stop</span>
+<span class="keyword">end</span>
+isterminal = 1; <span class="comment">%Terminate integration when condtion met</span>
+direction = 0; <span class="comment">%Direction doesn't matter</span>
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Rocket Problem
+% Spaceflight Mechanics - Spring 2019
+% Johnathan Corbin
+
+function RocketProblem
+%% Clearing console and variables.
+clear, clc
+
+%% Declaring constant values given from problem statement.
+Isp = 353; %LOx - Kerosene propellant, [s]
+epsilon = 0.01; %Rocket's structural ratio
+mass_L = 1000; %Payload mass, [kg]
+mass_P = 10000; %Propellant mass, [kg]
+diameter = 1.65; %Rocket diameter, [m]
+t_burn = 240; %Total burn time, [s]
+r_earth = 6378 * 1000; %Radius of the Earth, [m]
+t0 = 0; %Initial time, [s]
+pitch = 500; %Height at which pitchover begins, [m]
+u = 398600 * 1000^3; %Standard gravitational parameter for Earth, [m^3/s^2]
+s_g = 9.81; %Standard gravity, [m/s^2]
+rho0 = 1.225; %Sea level air density, [kg/m^3]
+hscale = 7500; %Density scale height, [m]
+
+%% Intermediate calculations of various values.
+A = pi * (diameter / 2)^2; %Frontal area of the rocket, [m^2]
+tspan = [t0, t_burn]; %Time range for the integrator, [s]
+mass_structure = -epsilon * mass_P / (epsilon - 1); %Structural mass of the rocket, [kg]
+m_dot = mass_P / t_burn; %Mass rate of ejecta, [kg/s]
+thrust = m_dot * Isp * s_g; %Thrust generated by ejecta, [N]
+
+%% No atmosphere, no pitchover angle.
+theta0 = 0; %Pitchover angle, [rad]
+Cd = 0; %Drag coefficient
+v0 = 0; %Initial velocity, [m/s]
+x0 = 0; %Initial downrange distance, [m]
+h0 = 0; %Initial height, [m]
+
+f0 = [v0, theta0, x0, h0]; % Initial conditions vector
+Opt1 = odeset('Events', @Begin_Pitch);
+[time, f] = ode45(@rocketMan, tspan, f0, Opt1);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+figure(1)
+plot(x / 1000, h / 1000, 'REPLACE_WITH_DASH_DASHk')
+hold on
+
+v0 = v(end); %Initial velocity, [m/s]
+x0 = x(end); %Initial downrange distance, [m]
+h0 = h(end); %Initial height, [m]
+
+tspan = [time(end), t_burn];
+f0 = [v0, theta0, x0, h0];
+Opt2 = odeset('Events', @Crashed);
+[~, f] = ode45(@rocketMan2, tspan, f0, Opt2);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+plot(x / 1000, h / 1000, 'REPLACE_WITH_DASH_DASHk')
+grid on
+title('No Atmosphere, No Pitch')
+xlabel('Downrange [km]')
+ylabel('Height [km]')
+
+%% No atmosphere, 0.1 rad pitchover angle.
+theta0 = 0.1 * pi / 180; %Pitchover angle, [rad]
+Cd = 0; %Drag coefficient
+v0 = 0; %Initial velocity, [m/s]
+x0 = 0; %Initial downrange distance, [m]
+h0 = 0; %Initial height, [m]
+tspan = [t0, t_burn];
+
+f0 = [v0, 0, x0, h0]; % Initial conditions vector
+Opt1 = odeset('Events', @Begin_Pitch);
+[time, f] = ode45(@rocketMan, tspan, f0, Opt1);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+figure(2)
+plot(x / 1000, h / 1000, 'REPLACE_WITH_DASH_DASHk')
+hold on
+
+v0 = v(end); %Initial velocity, [m/s]
+x0 = x(end); %Initial downrange distance, [m]
+h0 = h(end); %Initial height, [m]
+
+tspan = [time(end), t_burn];
+f0 = [v0, theta0, x0, h0];
+Opt2 = odeset('Events', @Crashed);
+[~, f] = ode45(@rocketMan2, tspan, f0, Opt2);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+p(1) = plot(x / 1000, h / 1000, 'REPLACE_WITH_DASH_DASHk');
+grid on
+title('0.1 Rad Pitch')
+xlabel('Downrange [km]')
+ylabel('Height [km]')
+
+%% Atmosphere, 0.1 rad pitchover angle.
+theta0 = 0.1 * pi / 180; %Pitchover angle, [rad]
+Cd = 0.3; %Drag coefficient
+v0 = 0; %Initial velocity, [m/s]
+x0 = 0; %Initial downrange distance, [m]
+h0 = 0; %Initial height, [m]
+tspan = [t0, t_burn];
+
+f0 = [v0, 0, x0, h0]; % Initial conditions vector
+Opt1 = odeset('Events', @Begin_Pitch);
+[time, f] = ode45(@rocketMan, tspan, f0, Opt1);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+plot(x / 1000, h / 1000, 'b')
+hold on
+
+v0 = v(end); %Initial velocity, [m/s]
+x0 = x(end); %Initial downrange distance, [m]
+h0 = h(end); %Initial height, [m]
+
+tspan = [time(end), t_burn];
+f0 = [v0, theta0, x0, h0];
+Opt2 = odeset('Events', @Crashed);
+[~, f] = ode45(@rocketMan2, tspan, f0, Opt2);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+p(2) = plot(x / 1000, h / 1000, 'b');
+legend(p([1 2]), 'No Drag','With Drag', 'location', 'best')
+
+%% Atmosphere, 0.1 rad pitchover angle, changing parameters
+theta0 = 1.1 * pi /180; %Pitchover angle, [rad]
+Cd = 0.3; %Drag coefficient
+v0 = 0; %Initial velocity, [m/s]
+x0 = 0; %Initial downrange distance, [m]
+h0 = 0; %Initial height, [m]
+tspan = [t0, t_burn];
+
+mass_P = 15350;
+m_dot = mass_P / t_burn; %Mass rate of ejecta, [kg/s]
+thrust = m_dot * Isp * s_g; %Thrust generated by ejecta, [N]
+
+f0 = [v0, 0, x0, h0]; % Initial conditions vector
+Opt1 = odeset('Events', @Begin_Pitch);
+[time, f] = ode45(@rocketMan, tspan, f0, Opt1);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+figure(3)
+subplot(2, 2, [1 2])
+plot(x / 1000, h / 1000, 'REPLACE_WITH_DASH_DASHk')
+hold on
+
+subplot(2, 2, [3 4])
+plot(h / 1000, v / 1000, 'REPLACE_WITH_DASH_DASHk')
+hold on
+
+v0 = v(end); %Initial velocity, [m/s]
+x0 = x(end); %Initial downrange distance, [m]
+h0 = h(end); %Initial height, [m]
+
+tspan = [time(end), t_burn];
+f0 = [v0, theta0, x0, h0];
+Opt2 = odeset('Events', @Crashed);
+[~, f] = ode45(@rocketMan2, tspan, f0, Opt2);
+v = f(:, 1);
+theta = f(:, 2);
+x = f(:, 3);
+h = f(:, 4);
+
+subplot(2, 2, [1 2])
+plot(x / 1000, h / 1000, 'REPLACE_WITH_DASH_DASHk')
+grid on
+title('Adjusting Parameters')
+xlabel('Downrange [km]')
+ylabel('Height [km]')
+
+subplot(2, 2, [3 4])
+plot(h / 1000, v / 1000, 'REPLACE_WITH_DASH_DASHr')
+grid on
+xlabel('Height [km]')
+ylabel('Velocity [km/s]')
+
+fprintf('\n Final burn height =                                       %g', h(end) / 1000)
+fprintf('\n Final burn velocity =                                     %g', v(end) / 1000)
+fprintf('\n Final burn angle =                                        %g', theta(end) * 180 / pi)
+fprintf('\n')
+
+%% Rates function called by ODE45.
+function dydt = rocketMan(t, y)
+    dydt = zeros(size(y));
+    
+    v = y(1);
+    theta = y(2);
+    x = y(3);
+    h = y(4);
+    
+    if t < t_burn
+       mass = mass_structure + mass_L + mass_P - m_dot * t;
+       T = thrust;
+    else
+        T = 0;
+        mass = mass_structure + mass_L;
+    end
+
+    g = -(mass * u) / (r_earth + h)^2;
+    density = rho0 * exp(-h / hscale);
+    drag = -0.5 * density * Cd * A * v^2;
+    
+    theta_dot = 0;
+    v_dot = (T + drag + g) / mass;
+    x_dot = 0;
+    h_dot = v;
+    
+    dydt(1) = v_dot;
+    dydt(2) = theta_dot;
+    dydt(3) = x_dot;
+    dydt(4) = h_dot;
+end
+
+function dydt = rocketMan2(t, y)
+    dydt = zeros(size(y));
+    
+    v = y(1);
+    theta = y(2);
+    x = y(3);
+    h = y(4);
+    
+    if t < t_burn
+       mass = mass_structure + mass_L + mass_P - m_dot * t;
+       T = thrust;
+    else
+        T = 0;
+        mass = mass_structure + mass_L;
+    end
+
+    g = (mass * u) / (r_earth + h)^2;
+    density = rho0 * exp(-h / hscale);
+    drag = 0.5 * density * Cd * A * v^2;
+    
+    v_dot = (T - drag - g * cos(theta)) / mass;
+    theta_dot = (u * sin(theta)) / (v * (r_earth + h)^2);
+    x_dot = v*sin(theta);
+    h_dot = v*cos(theta);
+
+    dydt(1) = v_dot;
+    dydt(2) = theta_dot;
+    dydt(3) = x_dot;
+    dydt(4) = h_dot;
+end
+
+function [value,isterminal,direction] = Begin_Pitch(~,y)
+%Event funtion to stop integration when rocket reaches 500[m]
+if y(4) < pitch
+ value = 1; %Keep going
+else %If not
+ value = 0; %Then stop
+end
+isterminal = 1; %Terminate integration when condtion met
+direction = 0; %Direction doesn't matter
+end
+
+function [value,isterminal,direction] = Crashed(~,y)
+%Event funtion to stop integration when rocket reaches 500[m]
+if y(4) > 0
+ value = 1; %Keep going
+else %If not
+ value = 0; %Then stop
+end
+isterminal = 1; %Terminate integration when condtion met
+direction = 0; %Direction doesn't matter
+end
+end
+##### SOURCE END #####
+--></body></html>
