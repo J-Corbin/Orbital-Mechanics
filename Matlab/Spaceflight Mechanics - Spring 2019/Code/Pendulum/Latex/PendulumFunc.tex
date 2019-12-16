@@ -1,0 +1,39 @@
+
+% This LaTeX was auto-generated from MATLAB code.
+% To make changes, update the MATLAB code and republish this document.
+
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{color}
+
+\sloppy
+\definecolor{lightgray}{gray}{0.5}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+    
+    \begin{verbatim}
+ function dydt = PendulumFunc(t, y)
+% Program determine the first order time derivatives of variable vector y = [y1,y2] for
+% the current values of y and time t.
+global L g
+ % can be easily used by the the dydt script
+
+ dydt = zeros(size(y)); % initialize to zero and makes column vector
+
+ dydt(1) = y(2);
+
+ dydt(2) = -(g * sin(y(1))) / L;
+\end{verbatim}
+
+        \color{lightgray} \begin{verbatim}Not enough input arguments.
+
+Error in PendulumFunc (line 7)
+ dydt = zeros(size(y)); % initialize to zero and makes column vector
+\end{verbatim} \color{black}
+    
+
+
+\end{document}
+    

@@ -1,0 +1,3 @@
+Departure Windows:
+	t_depart = 'Jun 1, 2022 13:54:24.313127';
+	t_arrive = 'Mar 1, 2022 13:54:24.313127';
